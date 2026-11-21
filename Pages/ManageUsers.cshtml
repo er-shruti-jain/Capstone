@@ -1,0 +1,193 @@
+@page
+@using System.Security.Claims
+@model ManageUsersModel
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>User Management</h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add User
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th width="180">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-2">
+                                        @user.Name.Substring(0, 1)
+                                    </div>
+                                    @user.Name
+                                </div>
+                            </td>
+                            <td>@user.Email</td>
+                            <td>@user.Roles</td>
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td>@user.CreatedDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                               
+                                @if (@user.IsActive == true)
+                                {
+                                    <a asp-page-handler="Activate" asp-route-id="@user.Id" class="btn btn-sm btn-danger">
+                                        InActivate
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-page-handler="Activate" asp-route-id="@user.Id" class="btn btn-sm btn-success">
+                                        Activate
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7">Permissions :-
+                                @foreach (string c in @user.claims)
+                                {
+                                    @c
+                                    <span>, &nbsp;</span>
+                                }
+
+                                <button onclick="openUserForm('@user.Id')" class="btn btn-sm btn-warning">Edit</button>
+                              
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="userModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage User Permission</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+              <form asp-page-handler="UpdateClaim" method="Post">
+            <div class="modal-body">
+              
+                    <input type="hidden" id="UserId"  name="UserId"/>
+
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            Select the permissions you want to assign to this user.
+                        </small>
+                    </div>
+
+                    <div class="border rounded p-3">
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="chkRead"
+                             name="Read" value="true"/>
+                            <label class="form-check-label fw-medium" for="chkRead">
+                                Read
+                            </label>
+                            <div class="form-text">View records and information.</div>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="chkWrite" 
+                            name="Create" value="True" />
+                            <label class="form-check-label fw-medium" for="chkWrite" >
+                                Create
+                            </label>
+                            <div class="form-text">Create new records.</div>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="chkModify" 
+                            name="Update" value="true" />
+                            <label class="form-check-label fw-medium" for="chkModify" >
+                                Update
+                            </label>
+                            <div class="form-text">Modify existing records.</div>
+                        </div>
+
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="chkDelete"
+                             name="Delete" value="true" />
+                            <label class="form-check-label fw-medium" for="chkDelete">
+                                Delete
+                            </label>
+                            <div class="form-text">Delete existing records.</div>
+                        </div>
+
+                    </div>
+                
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i> Save Permissions
+                </button>
+            </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openUserForm(userId) {
+            $.ajax({
+                url: '/ManageUsers?handler=UserPermission',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (response) {
+                    $('#chkRead').prop('checked', response.read);
+                    $('#chkWrite').prop('checked', response.create);
+                    $('#chkModify').prop('checked', response.update);
+                    $('#chkDelete').prop('checked', response.delete);
+                    $('#UserId').val(userId);
+                },
+                error: function () {
+                    alert('error');
+                }
+            });
+          
+            // Show modal 2 ways
+            var modal = new bootstrap.Modal(
+                document.getElementById('userModal')
+            );
+            modal.show();
+            
+              
+            // 2. $('#userModal').modal('show');
+        }
+    </script>
+}

@@ -1,0 +1,63 @@
+@page
+@model RegisterModel
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+
+            <div class="card shadow">
+                <div class="card-body">
+
+                    <h2 class="card-title text-center mb-4">Register</h2>
+
+                    <form method="post">
+                        <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input asp-for="registerModel.Name" class="form-control"/>
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="registerModel.Email" class="form-label"></label>
+                            <input asp-for="registerModel.Email" class="form-control" />
+                            <span asp-validation-for="registerModel.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="registerModel.Password" class="form-label"></label>
+                            <input asp-for="registerModel.Password"
+                                   type="password"
+                                   class="form-control" />
+                            <span asp-validation-for="registerModel.Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="registerModel.ConfirmPassword" class="form-label"></label>
+                            <input asp-for="registerModel.ConfirmPassword"
+                                   type="password"
+                                   class="form-control" />
+                            <span asp-validation-for="registerModel.ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">
+                                Register
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <div class="text-danger mt-3" asp-validation-summary="All">
+                       
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <a asp-page="/Login">Already have an account? Login</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
