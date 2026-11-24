@@ -21,5 +21,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+  <Compile Remove="Capstone.Tests/**/*.cs" />
+  </ItemGroup>
+
 
 </Project>
