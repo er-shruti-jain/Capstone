@@ -18,13 +18,16 @@ public class ManageTickets : PageModel
 
     public void OnGet()
     {
+        var role=User.Claims.Where(c=>c.Type==ClaimTypes.Role).Select(c=>c.Value).ToList();
 
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if(role.Contains("Admin"))userId="%";
+
         using SqlConnection sqlConnection = new SqlConnection(_config.GetConnectionString("CapstoneDB"));
 
         string query = @"select tm.TicketId,tm.userID,um.Name,um.Email, tm.Message, tm.status, tm.Createddate
           from TicketMaster as tm join CRM_UserMaster as um on tm.UserId = um.Id 
-          where tm.userId like @userid";
+          where tm.userId like @userid order by  tm.Createddate desc";
 
         using SqlCommand sqlCommand = new SqlCommand(query,sqlConnection);
         sqlCommand.Parameters.AddWithValue("@userid",userId);
